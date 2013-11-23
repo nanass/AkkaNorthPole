@@ -1,6 +1,8 @@
 package Util;
 
-public final class Data{
+import java.io.*;
+
+public final class Data implements Serializable{
 
     private String message;
     private String who;
@@ -46,5 +48,49 @@ public final class Data{
 
     public String getAuthor(){
         return author;
+    }
+
+    public byte[] toByteArray(){
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        byte[] bytes = null;
+        try {
+            out = new ObjectOutputStream(bos);
+            out.writeObject(this);
+            bytes = bos.toByteArray();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                out.close();
+                bos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return bytes;
+    }
+
+    public static Data buildFromBytes(byte[] data){
+        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+        ObjectInput in = null;
+        Object o = null;
+        try {
+            in = new ObjectInputStream(bis);
+            o = in.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                bis.close();
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return (Data)o;
     }
 }

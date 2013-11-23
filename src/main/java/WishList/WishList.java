@@ -1,18 +1,25 @@
 package WishList;
 
 import Util.Data;
+import Util.InputActor;
+import Util.OutputActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
-import Server.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class WishList extends UntypedActor {
 
     private CopyOnWriteArrayList<Data> wishList = new CopyOnWriteArrayList<Data>();
-    ActorRef broadcast;
+    private ActorRef delivery;
+    private ActorRef wish;
+    private ActorRef out;
     WishList(){
-        broadcast = getContext().actorOf(Props.create(BroadcastOutMain.class));
+        delivery = getContext().actorOf(Props.create(InputActor.class, "5564", getSelf()));
+        wish = getContext().actorOf(Props.create(InputActor.class, "5565", getSelf()));
+        out = getContext().actorOf(Props.create(OutputActor.class, "5563"));
+        delivery.tell("Start", getSelf());
+        wish.tell("Start", getSelf());
     }
 
     @Override
@@ -40,7 +47,7 @@ public class WishList extends UntypedActor {
         System.out.println(output);
         Data data = new Data("all", output);
         data.setType("Delivery");
-        broadcast.tell(data,getSelf());
+        out.tell(data,getSelf());
     }
 
     private void addToWishList(Data msg){

@@ -2,8 +2,8 @@ package AkkaNorthPole.Actors;
 
 import AkkaNorthPole.Messages.Msg;
 import AkkaNorthPole.Messages.NorthPoleMsg;
-import Server.BroadcastOutMain;
 import Util.Data;
+import Util.OutputActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
@@ -19,7 +19,7 @@ public abstract class NorthPoleActor extends UntypedActor{
     final String name;
     private State state;
     Random randomGenerator = new Random();
-    ActorRef broadcast = getContext().actorOf(Props.create(BroadcastOutMain.class));
+    ActorRef output;
 
     public static Props mkProps(String name) {
         return Props.create(NorthPoleActor.class, name);
@@ -28,6 +28,7 @@ public abstract class NorthPoleActor extends UntypedActor{
     public NorthPoleActor (String name) {
         this.name = name;
         System.out.println(name + " is starting at " + this.self().path().toString());
+        output = getContext().actorOf(Props.create(OutputActor.class, "5563"));
     }
 
     protected void setState(State s) {
@@ -42,7 +43,7 @@ public abstract class NorthPoleActor extends UntypedActor{
 
     public void log(String s){
         System.out.println(name + ": "  + s);
-        broadcast.tell(new Data(name,s), getSelf());
+        output.tell(new Data(name, s), getSelf());
     }
 
     protected void reQueue(NorthPoleMsg msg){

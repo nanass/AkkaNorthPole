@@ -1,5 +1,7 @@
 package Server;
 
+import akka.actor.ActorRef;
+import akka.actor.Props;
 import akka.actor.UntypedActor;
 import org.atmosphere.cpr.Broadcaster;
 import org.atmosphere.cpr.BroadcasterFactory;
@@ -10,9 +12,12 @@ import java.util.concurrent.Future;
 public class BroadcastOutMain extends UntypedActor {
 
     Broadcaster b;
+    private ActorRef input;
 
     public BroadcastOutMain() {
         this.b = BroadcasterFactory.getDefault().lookup("/");
+        this.input = getContext().actorOf(Props.create(InputActor.class, "5563", getSelf()));
+        input.tell("Start", getSelf());
     }
 
     @Override
