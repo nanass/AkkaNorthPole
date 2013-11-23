@@ -3,6 +3,7 @@ package AkkaNorthPole.Main;
 import AkkaNorthPole.Actors.*;
 import AkkaNorthPole.Messages.Msg;
 import AkkaNorthPole.Messages.NorthPoleMsg;
+import Server.NettoServer;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
@@ -16,7 +17,7 @@ class NorthPole{
     enum name{ Dasher, Dancer, Prancer, Vixen, Comet, Cupid, Donder, Blitzen, Ruldolph }
 
     public static void main(String[] args) throws IOException {
-
+        NettoServer server = new NettoServer();
         List<ActorRef> elves = new ArrayList<ActorRef>();
         List<ActorRef> reindeer = new ArrayList<ActorRef>();
 
