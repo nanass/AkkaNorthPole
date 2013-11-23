@@ -12,7 +12,7 @@ public class Santa extends NorthPoleActor{
     enum santaState implements State {awake, asleep, welcomingElves,
                                       consultingWithElves, dismissingElves,
                                       hitchingReindeer, deliveringToys,
-                                      dismissingReindeer}
+                                      dismissingReindeer, eatingCookies}
     int wait = 0;
     private ActorRef waitingRoom;
 
@@ -46,7 +46,10 @@ public class Santa extends NorthPoleActor{
                  }
                 break;
             case Done :
-                if (wait > 1) {
+                if (getState().equals(santaState.eatingCookies)){
+                    getSender().tell(new Msg(NorthPoleMsg.Cookies, msg.group, msg.who), getSelf());
+                }
+                else if (wait > 1) {
                     wait--;
                 }
                 else {
@@ -87,6 +90,19 @@ public class Santa extends NorthPoleActor{
                 break;
             case WaitingRoom :
                 waitingRoom = getSender();
+                break;
+            case Cookies:
+                if(getState().equals(santaState.welcomingElves) || getState().equals(santaState.consultingWithElves) ||
+                        getState().equals(santaState.dismissingElves)){
+                    State savedState = getState();
+                    setState(santaState.eatingCookies);
+                    log("Eating Cookies with Mrs. Claus");
+                    reQueue(new Msg(NorthPoleMsg.Done), getSelf(), 200, getSender());
+                    setState(savedState);
+                }
+                else{
+                    getSender().tell(new Msg(NorthPoleMsg.Wait), getSelf());
+                }
                 break;
             default:
                 break;
