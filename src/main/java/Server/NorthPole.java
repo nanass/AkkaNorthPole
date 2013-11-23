@@ -1,5 +1,6 @@
 package Server;
 
+import akka.actor.ActorRef;
 import org.atmosphere.config.service.Get;
 import org.atmosphere.config.service.ManagedService;
 import org.atmosphere.config.service.Message;
@@ -23,7 +24,12 @@ public class NorthPole {
 
     @Message
     public String onMessage(String message) throws IOException {
-        return mapper.writeValueAsString(mapper.readValue(message, Data.class));
+        Data d = mapper.readValue(message, Data.class);
+        InjectWishList.wishList.tell(d, null);
+        return mapper.writeValueAsString(d);
+    }
+    public static class InjectWishList{
+        public static ActorRef wishList;
     }
 
 }

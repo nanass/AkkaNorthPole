@@ -4,6 +4,7 @@ import AkkaNorthPole.Actors.*;
 import AkkaNorthPole.Messages.Msg;
 import AkkaNorthPole.Messages.NorthPoleMsg;
 import Server.NettoServer;
+import WishList.*;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
@@ -22,7 +23,9 @@ class NorthPole{
         List<ActorRef> reindeer = new ArrayList<ActorRef>();
 
         ActorSystem system = ActorSystem.create("NorthPole");
-        ActorRef santa = system.actorOf(Props.create(Santa.class, "Santa"));
+        ActorRef wishList = system.actorOf(Props.create(WishList.class));
+        Server.NorthPole.InjectWishList.wishList = wishList;
+        ActorRef santa = system.actorOf(Props.create(Santa.class, "Santa", wishList));
         ActorRef waitingRoom = system.actorOf(Props.create(WaitingRoom.class, "WaitingRoom", santa));
         santa.tell(new Msg(NorthPoleMsg.WaitingRoom), waitingRoom);
 

@@ -2,6 +2,7 @@ package AkkaNorthPole.Actors;
 
 import AkkaNorthPole.Messages.Msg;
 import AkkaNorthPole.Messages.NorthPoleMsg;
+import Util.Data;
 import akka.actor.ActorRef;
 
 import java.util.HashMap;
@@ -15,10 +16,12 @@ public class Santa extends NorthPoleActor{
                                       dismissingReindeer, eatingCookies}
     int wait = 0;
     private ActorRef waitingRoom;
+    private ActorRef wishList;
 
     private HashMap<String, Msg> visitorQueue = new HashMap<String, Msg>();
-    public Santa(String name) {
+    public Santa(String name, ActorRef wishList) {
         super(name);
+        this.wishList = wishList;
         setState(santaState.asleep);
         log("Sleeping");
     }
@@ -72,6 +75,7 @@ public class Santa extends NorthPoleActor{
                         case hitchingReindeer :
                             log("Harnessing reindeer");
                             setState(santaState.deliveringToys);
+                            wishList.tell(new Data("wishlist","Deliver"), null);
                             doAction(msg.who, new Msg(NorthPoleMsg.Deliver, msg.group, msg.who));
                             break;
                         case deliveringToys :
