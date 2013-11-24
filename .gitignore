@@ -40,3 +40,8 @@ Thumbs.db83;40100;0c
 *.iml
 target/*
 .idea/*
+/target
+exportToHTML/*
+.settings/*
+.classpath
+.project
